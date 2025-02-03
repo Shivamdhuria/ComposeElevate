@@ -8,8 +8,8 @@ plugins {
     alias(libs.plugins.vanniktech.mavenPublish)
 }
 
-group = "io.github.kotlin"
-version = "1.0.0"
+group = "io.shiv.compose.elevate"
+version = "0.0.1"
 
 kotlin {
     jvm()
@@ -40,7 +40,7 @@ kotlin {
 }
 
 android {
-    namespace = "org.jetbrains.kotlinx.multiplatform.library.template"
+    namespace = "io.shiv.compose.elevate.android"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -55,28 +55,30 @@ mavenPublishing {
     coordinates(group.toString(), "library", version.toString())
 
     pom {
-        name = "My library"
+        name = "Compose Elevate"
         description = "A library."
-        inceptionYear = "2024"
-        url = "https://github.com/kotlin/multiplatform-library-template/"
+        inceptionYear = "2025"
+        url = "https://github.com/Shivamdhuria/ComposeElevate"
         licenses {
             license {
-                name = "XXX"
-                url = "YYY"
-                distribution = "ZZZ"
+
+                name = "The Apache License, Version 2.0"
+                url = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "https://www.apache.org/licenses/LICENSE-2.0.txt"
+
             }
         }
         developers {
             developer {
-                id = "XXX"
-                name = "YYY"
-                url = "ZZZ"
+                id = "Shivamdhuria"
+                name = "Shivam Dhuria"
+                url = "https://github.com/Shivamdhuria"
             }
         }
         scm {
-            url = "XXX"
-            connection = "YYY"
-            developerConnection = "ZZZ"
+            url = "https://github.com/Shivamdhuria/ComposeElevate"
+            connection = "scm:git:git://github.com/Shivamdhuria/ComposeElevate.git"
+            developerConnection = "scm:git:ssh://github.com/Shivamdhuria/ComposeElevate.git"
         }
     }
 }
