@@ -14,4 +14,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "compose-elevate"
-include(":library")
+include(":composeApp")
+include(":elevate")
