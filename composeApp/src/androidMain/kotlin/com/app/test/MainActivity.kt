@@ -4,22 +4,26 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,9 +46,10 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.mikepenz.hypnoticcanvas.shaderBackground
 import com.mikepenz.hypnoticcanvas.shaders.MeshGradient
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.delay
 import kotlin.math.PI
 import kotlin.math.cos
-import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
@@ -67,6 +73,27 @@ fun AppAndroidPreview() {
 @Preview
 @Composable
 fun Test() {
+
+    var visible by remember { mutableStateOf(true) }
+
+    val infiniteTransition = rememberInfiniteTransition()
+
+    // 2. Animate a float value from 0 to -20 (floating up, negative is upward if you consider y=0 top)
+    //    Then it reverses, creating a gentle up and down movement
+    val offsetY by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = -10f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 3000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+
+    LaunchedEffect(Unit) {
+        delay(5000)
+        visible = true
+    }
+
     BoxWithConstraints(
         Modifier
             .fillMaxSize()
@@ -79,37 +106,86 @@ fun Test() {
             ), contentAlignment = Alignment.Center
     ) {
         // We use the available width/height for our start values.
-        val maxWidth = constraints.maxWidth.toFloat()
+        val maxWidth = (constraints.maxWidth.toFloat() + 100f)
 
         // Orbiting images with different parameters.
         SmoothOrbitingImage(
-            orbitRadius = maxWidth * 0.3f,
+            orbitRadius = maxWidth * 0.6f,
             orbitSpeed = 10000, // 10 seconds per orbit.
             initialAngle = 0f
         ) {
-            StrokedDonut()
-        }
+            OtherImage(
+                R.drawable.donut,
+                strokeSize = 8.dp,
+                color = Color(0xFFb2ebff),
+                size = 120.dp
+            )
 
-        SmoothOrbitingImage(
-            orbitRadius = maxWidth * 0.4f,
-            orbitSpeed = 15000, // 15 seconds per orbit.
-            initialAngle = 120f
-        ) {
-            OtherImage()
         }
 
         SmoothOrbitingImage(
             orbitRadius = maxWidth * 0.5f,
-            orbitSpeed = 8000, // 8 seconds per orbit.
-            initialAngle = 240f
+            orbitSpeed = 12000, // 15 seconds per orbit.
+            initialAngle = 120f
         ) {
-            AnotherImage()
+            OtherImage(R.drawable.coffee, strokeSize = 10.dp, color = Color.White, size = 100.dp)
         }
 
-        // Use a Box with contentAlignment = Alignment.Center so that the image is
-        // always centered in the available space. Then apply the computed offset.
-//        AnimatedStrokedDonut(offsetX, offsetY) {
-//            StrokedDonut()
+        SmoothOrbitingImage(
+            orbitRadius = maxWidth * 0.5f,
+            orbitSpeed = 14000, // 8 seconds per orbit.
+            initialAngle = 240f
+        ) {
+            OtherImage(R.drawable.coffee, strokeSize = 10.dp, color = Color.White, size = 100.dp)
+        }
+
+        SmoothOrbitingImage(
+            orbitRadius = maxWidth * 0.5f,
+            orbitSpeed = 12000, // 8 seconds per orbit.
+            initialAngle = 360f
+        ) {
+            OtherImage(R.drawable.donut, strokeSize = 10.dp, color = Color.White, size = 100.dp)
+        }
+
+        SmoothOrbitingImage(
+            orbitRadius = maxWidth * 0.5f,
+            orbitSpeed = 12000, // 8 seconds per orbit.
+            initialAngle = 90f
+        ) {
+            OtherImage(R.drawable.chill, strokeSize = 10.dp, color = Color.White, size = 160.dp)
+        }
+
+        AnimatedVisibility(
+            visible = visible,
+            enter = scaleIn(spring()),
+            exit = slideOutVertically() + shrinkVertically() + fadeOut()
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.logo2),
+                contentDescription = "Other Image",
+                modifier = Modifier
+                    .height(70.dp)
+                    .offset(y = offsetY.dp)
+                    .stroked8(
+                        30.dp,
+                        Color(0xFFa2d2ff),
+                        edgeSmoothness = 20,
+                        strokeAlpha = 0.08f,
+                        featheringLevels = persistentListOf(1.0f, 0.7f, 0.4f, 0.1f)
+                    ),
+                colorFilter = ColorFilter.tint(Color.White),
+                contentScale = ContentScale.FillHeight
+
+            )
+
+        }
+
+//        SmoothOrbitingImage(
+//            orbitRadius = maxWidth * 0.1f,
+//            orbitSpeed = 2000, // 8 seconds per orbit.
+//            initialAngle = 240f
+//        ) {
+//            OtherImage(R.drawable.scoot, strokeSize = 10.dp, color = Color.White, size = 100.dp)
 //        }
 
 
@@ -178,7 +254,6 @@ fun AnimatedStrokedDonut(offsetX: Float, offsetY: Float, content: @Composable ()
         }
     }
 }
-
 
 
 // A simple linear interpolation helper.

@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlin.math.cos
 import kotlin.math.sin
@@ -116,19 +117,25 @@ fun StrokedDonut() {
     Image(
         painter = painterResource(id = R.drawable.donut),
         contentDescription = "Donut",
-        modifier = Modifier.size(100.dp)
-        // If you have a custom stroke modifier, chain it here.
-        .stroked8(10.dp, Color.White, edgeSmoothness = 6)
+        modifier = Modifier
+            .size(100.dp)
+            // If you have a custom stroke modifier, chain it here.
+            .stroked8(10.dp, Color.White, edgeSmoothness = 6)
     )
 }
 
 // Another example image
 @Composable
-fun OtherImage() {
+fun OtherImage(id: Int, size: Dp, strokeSize: Dp, color: Color) {
     Image(
-        painter = painterResource(id = R.drawable.donut),
+        painter = painterResource(id = id),
         contentDescription = "Other Image",
-        modifier = Modifier.size(80.dp)
+        modifier = Modifier
+            .size(size)
+            .stroked8(
+                strokeSize, color, edgeSmoothness = 6
+            )
+
     )
 }
 
