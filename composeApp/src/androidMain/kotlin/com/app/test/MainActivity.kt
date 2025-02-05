@@ -123,6 +123,22 @@ fun Test() {
 
         }
 
+        // Orbiting images with different parameters.
+        SmoothOrbitingImage(
+            orbitRadius = maxWidth * 0.6f,
+            orbitSpeed = 11000, // 10 seconds per orbit.
+            initialAngle = -180f
+        ) {
+            OtherImage(
+                R.drawable.heart,
+                strokeSize = 10.dp,
+                color = Color.White,
+                size = 80.dp
+            )
+
+        }
+
+
         SmoothOrbitingImage(
             orbitRadius = maxWidth * 0.5f,
             orbitSpeed = 12000, // 15 seconds per orbit.
