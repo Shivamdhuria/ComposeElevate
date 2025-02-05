@@ -185,7 +185,7 @@ fun Test() {
                     .stroked8(
                         30.dp,
                         Color(0xFFa2d2ff),
-                        edgeSmoothness = 20,
+                        edgeSmoothness = 32,
                         strokeAlpha = 0.08f,
                         featheringLevels = persistentListOf(1.0f, 0.7f, 0.4f, 0.1f)
                     ),
