@@ -3,6 +3,7 @@ package com.app.test
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
+import com.mikepenz.hypnoticcanvas.shaderBackground
+import com.mikepenz.hypnoticcanvas.shaders.BlackCherryCosmos
+import com.mikepenz.hypnoticcanvas.shaders.MeshGradient
+import com.mikepenz.hypnoticcanvas.shaders.RainbowWater
+import com.mikepenz.hypnoticcanvas.shaders.Stage
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -35,7 +41,7 @@ import kotlin.math.sin
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        enableEdgeToEdge()
         setContent {
             Test()
         }
@@ -54,7 +60,12 @@ fun Test() {
     Box(
         Modifier
             .fillMaxSize()
-            .background(Color.White),
+            .shaderBackground(
+                MeshGradient(
+                    arrayOf(Color(0xFFFFb8f7), Color(0xFFffe3fb), Color(0xFFb9b2ff)),
+                    scale = 1f
+                )
+            ),
         contentAlignment = Alignment.Center
     ) {
         Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(0.dp)) {
@@ -68,13 +79,13 @@ fun Test() {
 //                modifier = Modifier.size(30.dp)
 //            )
 
-            Image(
-                painter = painterResource(
-                    id = R.drawable.donut
-                ),
-                contentDescription = null,
-                modifier = Modifier.size(150.dp).workingButMultipleHoles(90.dp, Color.Blue),
-            )
+//            Image(
+//                painter = painterResource(
+//                    id = R.drawable.donut
+//                ),
+//                contentDescription = null,
+//                modifier = Modifier.size(150.dp).workingButMultipleHoles(90.dp, Color.Blue),
+//            )
 
 //            StrokedImage2(
 //                painter = painter,
@@ -100,13 +111,13 @@ fun Test() {
 //                edgeSmoothness = 128
 //            )
 
-            Image(
-                painter = painterResource(
-                    id = R.drawable.donut
-                ),
-                contentDescription = null,
-                modifier = Modifier.size(150.dp).stroked(8.dp, Color.Magenta),
-            )
+//            Image(
+//                painter = painterResource(
+//                    id = R.drawable.donut
+//                ),
+//                contentDescription = null,
+//                modifier = Modifier.size(150.dp).stroked(8.dp, Color.Magenta),
+//            )
             Image(
                 painter = painterResource(
                     id = R.drawable.donut
@@ -114,19 +125,19 @@ fun Test() {
                 contentDescription = null,
                 modifier = Modifier.size(150.dp),
             )
+//            Image(
+//                painter = painterResource(
+//                    id = R.drawable.donut
+//                ),
+//                contentDescription = null,
+//                modifier = Modifier.size(150.dp).stroked6(20.dp, Color.Magenta, strokeAlpha = 0.03f),
+//            )
             Image(
                 painter = painterResource(
                     id = R.drawable.donut
                 ),
                 contentDescription = null,
-                modifier = Modifier.size(150.dp).stroked6(20.dp, Color.Magenta, strokeAlpha = 0.03f),
-            )
-            Image(
-                painter = painterResource(
-                    id = R.drawable.donut
-                ),
-                contentDescription = null,
-                modifier = Modifier.size(150.dp).stroked5(40.dp, Color.Magenta, strokeAlpha = 1f),
+                modifier = Modifier.size(150.dp).stroked7(40.dp, Color.Magenta, strokeAlpha = 1f),
             )
         }
 

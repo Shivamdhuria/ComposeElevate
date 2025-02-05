@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -23,6 +24,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.persistentListOf
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.roundToInt
@@ -367,3 +369,56 @@ fun Modifier.stroked6(
             }
         }
     )
+fun Modifier.stroked7(
+    strokeWidth: Dp = 8.dp,
+    strokeColor: Color = Color.White,
+    strokeAlpha: Float = 0.3f,
+    // Use persistentListOf to create a stable, immutable list.
+    featheringLevels: List<Float> = persistentListOf(1.0f, 0.8f, 0.6f, 0.4f, 0.2f),
+    edgeSmoothness: Int = 32
+): Modifier = this.then(
+    Modifier.drawWithCache {
+        // Convert stroke width from Dp to pixels.
+        val strokePx = strokeWidth.toPx() / 2
+
+        // Compute offsets evenly distributed around a circle.
+        val offsets = (0 until edgeSmoothness).map { i ->
+            val angle = 2 * PI * i / edgeSmoothness
+            Offset(
+                x = (strokePx * cos(angle)).toFloat(),
+                y = (strokePx * sin(angle)).toFloat()
+            )
+        }
+
+        onDrawWithContent {
+            // Apply feathered strokes
+            featheringLevels.forEach { featherLevel ->
+                offsets.forEach { offset ->
+                    withTransform({
+                        translate(
+                            offset.x * featherLevel,
+                            offset.y * featherLevel
+                        )
+                    }) {
+                        drawIntoCanvas { canvas ->
+                            val paint = Paint().apply {
+                                isAntiAlias = true
+                                filterQuality = FilterQuality.High
+                                colorFilter = ColorFilter.tint(
+                                    strokeColor.copy(alpha = strokeAlpha * featherLevel),
+                                    BlendMode.SrcIn
+                                )
+                            }
+                            val rect = Rect(Offset.Zero, size)
+                            canvas.saveLayer(rect, paint)
+                            this@onDrawWithContent.drawContent()
+                            canvas.restore()
+                        }
+                    }
+                }
+            }
+            // Finally, draw the original content on top.
+            drawContent()
+        }
+    }
+)

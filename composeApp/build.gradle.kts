@@ -33,6 +33,10 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation ("com.mikepenz.hypnoticcanvas:hypnoticcanvas:0.3.0")
+            implementation ("com.mikepenz.hypnoticcanvas:hypnoticcanvas-shaders:0.3.0")
+            implementation ("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.5")
+
         }
         commonMain.dependencies {
             implementation(project(":elevate"))
