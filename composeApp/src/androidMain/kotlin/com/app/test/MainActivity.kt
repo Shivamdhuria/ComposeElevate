@@ -4,21 +4,34 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -26,14 +39,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import coil3.compose.rememberAsyncImagePainter
 import com.mikepenz.hypnoticcanvas.shaderBackground
-import com.mikepenz.hypnoticcanvas.shaders.BlackCherryCosmos
 import com.mikepenz.hypnoticcanvas.shaders.MeshGradient
-import com.mikepenz.hypnoticcanvas.shaders.RainbowWater
-import com.mikepenz.hypnoticcanvas.shaders.Stage
 import kotlin.math.PI
 import kotlin.math.cos
+import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
@@ -57,89 +67,51 @@ fun AppAndroidPreview() {
 @Preview
 @Composable
 fun Test() {
-    Box(
+    BoxWithConstraints(
         Modifier
             .fillMaxSize()
+
             .shaderBackground(
                 MeshGradient(
-                    arrayOf(Color(0xFFFFb8f7), Color(0xFFffe3fb), Color(0xFFb9b2ff)),
-                    scale = 1f
+                    arrayOf(Color(0xFFFFb8f7), Color(0xFFffe3fb), Color(0xFFf9b2ff)),
+                    scale = 0.5f
                 )
-            ),
-        contentAlignment = Alignment.Center
+            ), contentAlignment = Alignment.Center
     ) {
-        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(0.dp)) {
+        // We use the available width/height for our start values.
+        val maxWidth = constraints.maxWidth.toFloat()
 
-            val painter = rememberAsyncImagePainter(model = R.drawable.heart)
-            val painter2 = rememberAsyncImagePainter(model = R.drawable.donut)
-//            StrokedImage(
-//                painter = painter,
-//                strokeWidth = 1.dp,
-//                strokeColor = Color.Blue,
-//                modifier = Modifier.size(30.dp)
-//            )
-
-//            Image(
-//                painter = painterResource(
-//                    id = R.drawable.donut
-//                ),
-//                contentDescription = null,
-//                modifier = Modifier.size(150.dp).workingButMultipleHoles(90.dp, Color.Blue),
-//            )
-
-//            StrokedImage2(
-//                painter = painter,
-//                strokeWidth = 20.dp,
-//                strokeColor = Color.Blue,
-//                modifier = Modifier.size(450.dp),
-//                edgeSmoothness = 50
-//            )
-//            Image(
-//                painter = painter,
-//                contentDescription = null,
-//                modifier = Modifier.size(100.dp).strokeNew(
-//                    strokeWidth = 8.dp,
-//                    strokeColor = Color.White,
-//                    edgeSmoothness = 64
-//                ).size(120.dp)
-//            )
-//            StrokedImage2(
-//                painter = painter2,
-//                strokeWidth = 90.dp,
-//                strokeColor = Color.Black,
-//                modifier = Modifier.size(150.dp),
-//                edgeSmoothness = 128
-//            )
-
-//            Image(
-//                painter = painterResource(
-//                    id = R.drawable.donut
-//                ),
-//                contentDescription = null,
-//                modifier = Modifier.size(150.dp).stroked(8.dp, Color.Magenta),
-//            )
-            Image(
-                painter = painterResource(
-                    id = R.drawable.donut
-                ),
-                contentDescription = null,
-                modifier = Modifier.size(150.dp),
-            )
-//            Image(
-//                painter = painterResource(
-//                    id = R.drawable.donut
-//                ),
-//                contentDescription = null,
-//                modifier = Modifier.size(150.dp).stroked6(20.dp, Color.Magenta, strokeAlpha = 0.03f),
-//            )
-            Image(
-                painter = painterResource(
-                    id = R.drawable.donut
-                ),
-                contentDescription = null,
-                modifier = Modifier.size(150.dp).stroked7(40.dp, Color.Magenta, strokeAlpha = 1f),
-            )
+        // Orbiting images with different parameters.
+        SmoothOrbitingImage(
+            orbitRadius = maxWidth * 0.3f,
+            orbitSpeed = 10000, // 10 seconds per orbit.
+            initialAngle = 0f
+        ) {
+            StrokedDonut()
         }
+
+        SmoothOrbitingImage(
+            orbitRadius = maxWidth * 0.4f,
+            orbitSpeed = 15000, // 15 seconds per orbit.
+            initialAngle = 120f
+        ) {
+            OtherImage()
+        }
+
+        SmoothOrbitingImage(
+            orbitRadius = maxWidth * 0.5f,
+            orbitSpeed = 8000, // 8 seconds per orbit.
+            initialAngle = 240f
+        ) {
+            AnotherImage()
+        }
+
+        // Use a Box with contentAlignment = Alignment.Center so that the image is
+        // always centered in the available space. Then apply the computed offset.
+//        AnimatedStrokedDonut(offsetX, offsetY) {
+//            StrokedDonut()
+//        }
+
 
     }
 
@@ -186,4 +158,30 @@ fun StrokedImage2(
             contentDescription = null
         )
     }
+}
+
+@Composable
+fun AnimatedStrokedDonut(offsetX: Float, offsetY: Float, content: @Composable () -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        // Use key(Unit) to create a separate recomposition boundary.
+        key(Unit) {
+            // Only the wrapper with graphicsLayer is updated during animation.
+            Box(modifier = Modifier.graphicsLayer {
+                translationX = offsetX
+                translationY = offsetY
+            }) {
+                content()
+            }
+        }
+    }
+}
+
+
+
+// A simple linear interpolation helper.
+private fun lerp(start: Float, stop: Float, fraction: Float): Float {
+    return start + fraction * (stop - start)
 }

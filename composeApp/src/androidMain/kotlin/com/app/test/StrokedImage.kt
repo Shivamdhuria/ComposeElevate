@@ -1,5 +1,6 @@
 package com.app.test
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
@@ -417,6 +418,169 @@ fun Modifier.stroked7(
                     }
                 }
             }
+            // Finally, draw the original content on top.
+            drawContent()
+        }
+    }
+)
+
+
+fun Modifier.stroked8(
+    strokeWidth: Dp = 8.dp,
+    strokeColor: Color = Color.White,
+    strokeAlpha: Float = 1f,
+    featheringLevels: List<Float> = persistentListOf(1.0f),
+    edgeSmoothness: Int = 32
+): Modifier = this.drawWithCache {
+    // Precompute the stroke half-width in pixels.
+    val strokePx = strokeWidth.toPx() / 2f
+    // Compute the offsets once.
+    val computedOffsets = (0 until edgeSmoothness).map { i ->
+        val angle = 2 * PI * i / edgeSmoothness
+        Offset(
+            x = (strokePx * cos(angle)).toFloat(),
+            y = (strokePx * sin(angle)).toFloat()
+        )
+    }
+    Log.i("animation","drawWithCache" )
+    // Create a paint object to reuse if possible.
+    val paint = Paint().apply {
+        isAntiAlias = true
+        filterQuality = FilterQuality.High
+    }
+
+    onDrawWithContent {
+        // For each feathering level and offset, draw the content with a tinted stroke.
+        featheringLevels.forEach { feather ->
+            computedOffsets.forEach { offset ->
+                withTransform({
+                    translate(offset.x * feather, offset.y * feather)
+                }) {
+                    drawIntoCanvas { canvas ->
+                        // Update the paint's color filter.
+                        paint.colorFilter = ColorFilter.tint(
+                            strokeColor.copy(alpha = strokeAlpha * feather),
+                            BlendMode.SrcIn
+                        )
+                        val rect = Rect(Offset.Zero, size)
+                        // Save the layer with our configured paint.
+                        canvas.saveLayer(rect, paint)
+                        this@onDrawWithContent.drawContent()
+                        canvas.restore()
+                    }
+                }
+            }
+        }
+        // Draw the original content on top.
+        drawContent()
+    }
+}
+
+fun Modifier.stroked10(
+    strokeWidth: Dp = 8.dp,
+    strokeColor: Color = Color.White,
+    strokeAlpha: Float = 0.3f,
+    featheringLevels: List<Float> = persistentListOf(1.0f, 0.8f, 0.6f, 0.4f, 0.2f),
+    edgeSmoothness: Int = 32
+): Modifier = this.then(
+    Modifier.drawWithCache {
+        // Convert stroke width from Dp to pixels.
+        val strokePx = strokeWidth.toPx() / 2
+
+        // Compute offsets evenly distributed around a circle.
+        val offsets = (0 until edgeSmoothness).map { i ->
+            val angle = 2 * PI * i / edgeSmoothness
+            Offset(
+                x = (strokePx * cos(angle)).toFloat(),
+                y = (strokePx * sin(angle)).toFloat()
+            )
+        }
+
+        // Cache the strokes
+        val strokes = featheringLevels.flatMap { featherLevel ->
+            offsets.map { offset ->
+                Pair(offset, featherLevel)
+            }
+        }
+
+        // Return a DrawScope lambda that will be reused
+        onDrawWithContent {
+            // Apply feathered strokes
+            strokes.forEach { (offset, featherLevel) ->
+                withTransform({
+                    translate(
+                        offset.x * featherLevel,
+                        offset.y * featherLevel
+                    )
+                }) {
+                    drawIntoCanvas { canvas ->
+                        val paint = Paint().apply {
+                            isAntiAlias = true
+                            filterQuality = FilterQuality.High
+                            colorFilter = ColorFilter.tint(
+                                strokeColor.copy(alpha = strokeAlpha * featherLevel),
+                                BlendMode.SrcIn
+                            )
+                        }
+                        val rect = Rect(Offset.Zero, size)
+                        canvas.saveLayer(rect, paint)
+                        this@onDrawWithContent.drawContent()
+                        canvas.restore()
+                    }
+                }
+            }
+            // Finally, draw the original content on top.
+            drawContent()
+        }
+    }
+)
+fun Modifier.stroked11(
+    strokeWidth: Dp = 8.dp,
+    strokeColor: Color = Color.White,
+    strokeAlpha: Float = 1f,
+    featheringLevels: List<Float> = persistentListOf(1.0f),
+    edgeSmoothness: Int = 32
+): Modifier = this.then(
+    Modifier.drawWithCache {
+        // Convert stroke width from Dp to pixels.
+        val strokePx = strokeWidth.toPx() / 2
+
+        // Create a single Paint object to reuse
+        val paint = Paint().apply {
+            isAntiAlias = true
+            filterQuality = FilterQuality.High
+        }
+
+        onDrawWithContent {
+            // Save a single layer for all strokes
+            drawIntoCanvas { canvas ->
+                val rect = Rect(Offset.Zero, size)
+                canvas.saveLayer(rect, paint)
+
+                // Draw the strokes
+                featheringLevels.forEach { featherLevel ->
+                    val alpha = strokeAlpha * featherLevel
+                    paint.colorFilter = ColorFilter.tint(
+                        strokeColor.copy(alpha = alpha),
+                        BlendMode.SrcIn
+                    )
+
+                    // Draw the stroke effect
+                    for (i in 0 until edgeSmoothness) {
+                        val angle = 2 * PI * i / edgeSmoothness
+                        val offset = Offset(
+                            x = (strokePx * cos(angle)).toFloat(),
+                            y = (strokePx * sin(angle)).toFloat()
+                        )
+                        canvas.translate(offset.x * featherLevel, offset.y * featherLevel)
+                        drawContent() // Draw the content with the current transformation
+                        canvas.translate(-offset.x * featherLevel, -offset.y * featherLevel) // Reset translation
+                    }
+                }
+
+                canvas.restore()
+            }
+
             // Finally, draw the original content on top.
             drawContent()
         }
