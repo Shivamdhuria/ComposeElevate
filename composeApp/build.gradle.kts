@@ -36,7 +36,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(project(":elevate"))
-
+            implementation("io.coil-kt.coil3:coil-compose:3.0.4")
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
