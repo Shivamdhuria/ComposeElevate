@@ -111,7 +111,7 @@ fun Test() {
         // Orbiting images with different parameters.
         SmoothOrbitingImage(
             orbitRadius = maxWidth * 0.6f,
-            orbitSpeed = 10000, // 10 seconds per orbit.
+            orbitSpeed = 14000, // 10 seconds per orbit.
             initialAngle = 0f
         ) {
             OtherImage(
@@ -126,8 +126,8 @@ fun Test() {
         // Orbiting images with different parameters.
         SmoothOrbitingImage(
             orbitRadius = maxWidth * 0.6f,
-            orbitSpeed = 11000, // 10 seconds per orbit.
-            initialAngle = -180f
+            orbitSpeed = 14000, // 10 seconds per orbit.
+            initialAngle = 60f
         ) {
             OtherImage(
                 R.drawable.heart,
@@ -141,7 +141,7 @@ fun Test() {
 
         SmoothOrbitingImage(
             orbitRadius = maxWidth * 0.5f,
-            orbitSpeed = 12000, // 15 seconds per orbit.
+            orbitSpeed = 14000, // 15 seconds per orbit.
             initialAngle = 120f
         ) {
             OtherImage(R.drawable.coffee, strokeSize = 10.dp, color = Color.White, size = 100.dp)
@@ -157,8 +157,8 @@ fun Test() {
 
         SmoothOrbitingImage(
             orbitRadius = maxWidth * 0.5f,
-            orbitSpeed = 12000, // 8 seconds per orbit.
-            initialAngle = 360f
+            orbitSpeed = 14000, // 8 seconds per orbit.
+            initialAngle = 180f
         ) {
             OtherImage(R.drawable.donut, strokeSize = 10.dp, color = Color.White, size = 100.dp)
         }
@@ -166,7 +166,7 @@ fun Test() {
         SmoothOrbitingImage(
             orbitRadius = maxWidth * 0.5f,
             orbitSpeed = 12000, // 8 seconds per orbit.
-            initialAngle = 90f
+            initialAngle = 300f
         ) {
             OtherImage(R.drawable.chill, strokeSize = 10.dp, color = Color.White, size = 160.dp)
         }
