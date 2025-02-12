@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import io.github.shivamdhuria.elevate.stroked
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -120,7 +121,7 @@ fun StrokedDonut() {
         modifier = Modifier
             .size(100.dp)
             // If you have a custom stroke modifier, chain it here.
-            .stroked8(10.dp, Color.White, edgeSmoothness = 6)
+            .stroked(10.dp, Color.White, edgeSmoothness = 6)
     )
 }
 
@@ -132,7 +133,7 @@ fun OtherImage(id: Int, size: Dp, strokeSize: Dp, color: Color) {
         contentDescription = "Other Image",
         modifier = Modifier
             .size(size)
-            .stroked8(
+            .stroked(
                 strokeSize, color, edgeSmoothness = 6
             )
 

@@ -6,11 +6,13 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.vanniktech.mavenPublish)
+    alias(libs.plugins.composeMultiplatform)
+    alias(libs.plugins.composeCompiler)
 
 }
 
 group = "io.github.shivamdhuria.elevate"
-version = "0.0.4"
+version = "0.0.5"
 
 kotlin {
     jvm()
@@ -24,11 +26,14 @@ kotlin {
     iosX64()
     iosArm64()
     iosSimulatorArm64()
-    linuxX64()
 
     sourceSets {
         val commonMain by getting {
             dependencies {
+                api(compose.runtime)
+                api(compose.foundation)
+                implementation(libs.kotlinx.collections.immutable)
+
                 //put your multiplatform dependencies here
             }
         }
